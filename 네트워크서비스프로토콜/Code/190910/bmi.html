@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>체질량지수 계산하기</title>
+    <script>
+      function calculateBMI() {
+        height = document.getElementById("height");
+        weight = documnet.getElementById("weight");
+        console.log(height);
+        console.log(weight);
+        return height/weight/weight;
+      }
+    </script>
+</head>
+<body>
+<br>
+키 : <input type = "text" id = "height"> m <br>
+몸무게 : <input type = "text" id = "weight"> kg <br>
+당신의 체질량 지수는 <span id = "bmi"> </span> 입니다 <br>
+<button id = "calculate" onclick = "document.getElementById("bmi").innerHtml=calculateBMI()"> 계산 </button>
+</body>
+</html>
