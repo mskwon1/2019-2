@@ -95,4 +95,44 @@ function fact(n) {
   var card1 = new Card("하트","A");
   ~~~
 
-  
+## DOM을 사용해 이벤트 처리기 등록
+
+- DOM(Document Object Model)은 자바스크립트 등의 프로그램이 
+  **HTML 요소를 조작**할 수 있게 하는 인터페이스
+- 전형적인 방법
+  - window.onload 를 사용해 HTML **문서를 다 읽어들인** 후 2)와 3)을 실행
+  - **document.getElementById() 메서드를** 사용해 
+    특정 id속성 값을 가진 HTML요소의 객체를 가져온다
+  - 요소 **객체의 이벤트 처리기 프로퍼티**에 이벤트 처리기로 동작할 **함수를 등록**한다
+
+~~~js
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>시각을 콘솔에 표시하기</title>
+	<script>
+        function displayTime() {
+        	var d = new Date();
+        	console.log("현재 시각은 " + d.toLocaleString() + " 입니다.");
+    	}
+		// Window 객체의 onload 프로퍼티에 함수 저장
+		window.onload = function() {
+            // input 요소의 객체 가져오기
+            var button = document.getElementById("button");
+            // input 요소 클릭시 동작하는 이벤트 처리기 등록
+            button.onclick = displayTime; 
+        }
+	</script>
+</head>
+<body>
+	<input type = "button" value = "click" id = "button">
+</body>
+</html>
+~~~
+
+## innerHTML 프로퍼티로 읽고 쓰기
+
+- 요소객체의 innerHTML 프로퍼티
+  - 해당 HTML 요소의 내용을 가리킴
+  - 해당 요소의 내용을 읽거나 쓸 수 있음
