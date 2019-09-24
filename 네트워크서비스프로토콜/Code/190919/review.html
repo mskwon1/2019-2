@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>getElementById 예제</title>
+    <script>
+        window.onload = function() {
+          var elem = document.getElementById("para");
+          var blue = document.getElementById("btnBlue");
+          var red = document.getElementById("btnRed");
+
+          blue.onclick = function() {
+            elem.style.color = 'blue';
+          }
+
+          red.onclick = function() {
+            elem.style.color = 'red';
+          }
+        }
+    </script>
+  </head>
+  <body>
+    <p id = "para"> 어떤 글</p>
+    <button id="btnBlue">blue</button>
+    <button id='btnRed'>red</button>
+  </body>
+</html>

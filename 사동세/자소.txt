@@ -1,0 +1,27 @@
+name : ms
+age : 25
+major : software
+grade : junior year
+childhood : born in changwon, 
+	age 11 went to china for 4 years(learns english, not chinese), 
+	16 came back to seoul
+hobby : baseball, basketball, computer games
+traveling experiences : china, taiwan, hongkong, macau
+	favorite : macau - casino and portuguese foods
+life vision : rich & happy
+
+hi
+my name is minsu i am 25 years old and my major is software, currently in junior year.
+
+let me talk about my childhood first
+i was born in changwon, gyeongsangnamdo at 1996. at my age of 11, my family moved to china, because my father was told to go by 
+the company he was working for. In china i learned some english at the international school, and ironically i did not learn any chinese when i was there.
+At my age of 16, my family moved back to korea, and this time to seoul. and from then, I am living in seoul until now.
+
+my hobby is mostly related to sports, i like to play and watch baseball, basketball, football games. but my favorite hobby is playing computer games,
+alone in my room.
+
+Traveling is also my hobby. i've been to different countries such as china, taiwan, hongkong, and macau. And my favorite one was macau.
+I enjoyed to play in the casino, even if i couldn't earn any money thorugh it. Also the local foods in macau were great. Especially egg tart tasted awesome.
+
+thank you for listening

@@ -4,31 +4,33 @@
       <meta charset="utf-8">
       <title>스톱워치</title>
       <script>
+        window.onload = function() {
           var time = 0;
           var timer;
 
-          plusTime = function() {timer = setInterval(function() {
+          document.getElementById('start').onclick = function() {timer = setInterval(function() {
             time += 0.01;
             var timeText = document.getElementById("sec");
             timeText.innerHTML = time.toFixed(2);
           }, 10)};
 
-          stopTime = function() {
+          document.getElementById('stop').onclick = function() {
             clearInterval(timer);
           };
 
-          reset = function() {
+          document.getElementById('reset').onclick = function() {
             time = 0;
             var timeText = document.getElementById("sec");
             timeText.innerHTML = time.toFixed(2);
             stopTime();
           }
+        }
       </script>
   </head>
   <body>
       <span id = "sec">0.00 </span> 초 경과 <br />
-      <input type="button" value="시작" id="start" onclick="plusTime()"> </input>
-      <input type="button" value="종료" id="stop" onclick="stopTime()"> </input>
-      <input type="button" value="리셋" id="reset" onclick="reset()"> </input>
+      <input type="button" value="시작" id="start"> </input>
+      <input type="button" value="종료" id="stop"> </input>
+      <input type="button" value="리셋" id="reset"> </input>
   </body>
 </html>
