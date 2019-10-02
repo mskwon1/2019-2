@@ -1,0 +1,13 @@
+함수의 input 이미지 받아오기
+마스크 이미지 => 이미 본 픽셀은 건너뛰기 위해 기록하는 용도
+결과 이미지 => 라벨링된 이미지 
+
+pseudo code //
+for i in range(height)
+	for j in range(width)
+		if (input 이미지의 255를 찾았다)
+			if (마스크에 있는 픽셀이다)
+				break
+			해당 픽셀 라벨링(그룹마다 다른 라벨)
+			해당 픽셀과 n연결성 있는 친구들 다 라벨링
+			

@@ -23,6 +23,11 @@
 			lang.onclick = function() {
 				head.innerHTML = 'Ethiopian Gedep';
 			}
+
+			var accents = document.getElementsByClassName('accent');
+			for (var i=0;i<accents.length;i++) {
+				accents[i].style.textDecoration = "underline";
+			}
 		}
 	</script>
 </head>
