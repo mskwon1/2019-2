@@ -1,0 +1,45 @@
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+
+def histogram(img):
+    # 크기가 정해져 있고 모든 값이 0인 배열 생성 (크기,자료형)
+    bins = np.zeros(256, np.int32) # 0~255 사이의 명암값을 넣을 배열
+    # bins = np.zeros(16, np.int32) # 0~15 사이의 명암값을 넣을 배열
+
+    # image.shape : 3차원 행렬로 표현,
+    # (y size,x size, 값이 몇개의 원소로 이루어져있는지 - RGB일시 3)
+    height, width = img.shape
+
+    for i in range(0, height) :
+        for j in range(0, width) :
+            bins[img[i][j]] += 1    # 해당 픽셀의 명암값 +1
+            # bins[int(img[i][j]/16)] += 1
+
+    bins = bins/(width * height)     # h'(l) = h(l)/(M * N)
+
+    return bins
+
+# 파일, flag (-1 : alpha 채널까지 포함하여 읽기
+#              0 : 그레이스케일로 읽기(중간단계로 많이 사용)
+#              1 : 칼라 파일로 읽기(투명한 부분은 무시) DEFAULT
+img = cv2.imread('barbara.jpg', 0) # 리턴값은 numpy의 ndarray 타입
+
+# cv2.imshow('title', img)
+
+# 직접 만든 히스토그램 함수 이용
+bins = histogram(img)
+
+plt.plot(bins) # bins의 값들을 matplot에 plot
+plt.xlim([0,256]) # 그림 범위 지정(xlim : x축 범위, ylim : y축 범위) 최소값, 최대값
+# plt.xlim([0,15])
+
+plt.show()
+
+# OpenCV 이용
+
+# cv.calcHist(images, channels, mask, histSize, ranges[, hist[, accumulate]])
+hist = cv2.calcHist([img], [0], None, [256], [0,256])
+plt.plot(hist)
+plt.xlim(0.256)
+plt.show()
