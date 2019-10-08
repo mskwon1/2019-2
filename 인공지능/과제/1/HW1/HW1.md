@@ -1,6 +1,11 @@
 # 인공지능 과제1 - 20142697 권민수
 
+## 선형회귀
+
+### 정규방정식
+
 ```python
+# 20142697 권민수
 # 선형회귀
 # 관련 라이브러리
 import numpy as np
@@ -11,10 +16,11 @@ import matplotlib.pyplot as plt
 
 
 ```python
-# 랜덤 X 집합 생성 (100행 1열)
+# 0부터 1사이의 값을 가지는 100 행 1열 행렬 생성, 2배수 - 훈련집합
 X = 2 * np.random.rand(100, 1) 
-y = 4 + 3 * X + np.random.randn(100,1) # y = f(x)
-plt.plot(X, y, "b") # X, y 를 blue 마커로 plot
+# 기대값 0, 표준편차 1의 가우시안 정규 분포를 따르는 행렬을 더 해줌
+y = 4 + 3 * X + np.random.randn(100,1) # x 값이 커짐에 따라서 y값도 커진다
+plt.plot(X, y, "b.") # X, y 를 blue 마커로 plot
 plt.xlabel("$x_1$", fontsize = 18)
 plt.ylabel("$y$", rotation = 0, fontsize = 18)
 plt.axis([0,2,0,15]) # xmin, xmax, ymin, ymax
@@ -26,20 +32,32 @@ plt.show()
 
 ![png](output_1_0.png)
 
-- X 집합을 랜덤으로 구성했고, f(x)에 추가적으로 랜덤항이 하나 더 있어서 그래프로 그리면 이렇게 됨
+
+- y = 3x + 4 + 노이즈(가우시안 분포)
+    - Θ0 = 4, Θ1 = 3 인 데이터 생성
+
 
 ```python
 ### 정규 방정식을 사용한 선형회귀 접근 ###
-X_b = np.c_[np.ones((100,1)), X] # np.c_ : 행렬을 열방향으로 합치는 함수, 1열에는 1, 2열에는 X값 저장
+X_b = np.c_[np.ones((100,1)), X] # np.c_ : 행렬을 열방향으로 합치는 함수
 theta_best = np.linalg.inv(X_b.T.dot(X_b)).dot(X_b.T).dot(y) # np.linalg.inv() : 역행렬 구하는 함수, dot() 행렬곱셈
 
 # (2) theta_best 출력 확인
 print(theta_best)
 ```
 
-    [[3.96871983]
-     [3.13682135]]
+    [[3.95164201]
+     [3.08596085]]
 
+
+- 정규 방정식을 사용해 Θ값을 찾는 방식, 아래는 정규방정식이다
+
+
+  - 노이즈 때문에 정확하게 나오지는 않지만, 매우 비슷하게 나온다
+
+  $$
+  \hat\theta = (X^T\cdot X)^{-1}\cdot X^T\cdot y
+  $$
 
 
 ```python
@@ -50,9 +68,8 @@ y_predict = X_new_b.dot(theta_best)
 print(y_predict)
 ```
 
-    [[ 3.96871983]
-     [10.24236253]]
-
+    [[ 3.95164201]
+     [10.12356372]]
 
 
 ```python
@@ -67,8 +84,10 @@ plt.show()
 ```
 
 
-![png](output_4_0.png)
+![png](output_7_0.png)
 
+
+- 정규방정식을 통해 구한 세타값으로 예측값을 플롯
 
 
 ```python
@@ -80,9 +99,11 @@ print(lin_reg.intercept_) # 추정된 상수항
 print(lin_reg.coef_) # 추정된 가중치 벡터
 ```
 
-    [3.96871983]
-    [[3.13682135]]
+    [3.95164201]
+    [[3.08596085]]
 
+- sklearn 패키지의 LinearRegression 객체를 활용해서 선형회귀분석 진행, 
+  추정된 편향(Θ0 = 4) 과 가중치(Θ1 = 3)가 위와 같이 나옴
 
 
 ```python
@@ -90,9 +111,11 @@ print(lin_reg.coef_) # 추정된 가중치 벡터
 print(lin_reg.predict(X_new)) # 앞서 추정한 모형으로 X_new 집합에 대한 출력 예측
 ```
 
-    [[ 3.96871983]
-     [10.24236253]]
+    [[ 3.95164201]
+     [10.12356372]]
 
+
+- 앞서 구한 상수항과 벡터를 기반으로 X_new의 값에 대한 출력 예측, 위와 같음
 
 
 ```python
@@ -103,9 +126,11 @@ theta_best_svd, residuals, rank, s = np.linalg.lstsq(X_b, y, rcond = 1e-6)
 print(theta_best_svd)
 ```
 
-    [[3.96871983]
-     [3.13682135]]
+    [[3.95164201]
+     [3.08596085]]
 
+
+- SVD 방법을 사용하는 np.linalg.lstsq 함수를 이용해 구해도 결과가 똑같이 나옴
 
 
 ```python
@@ -113,17 +138,19 @@ print(theta_best_svd)
 print(np.linalg.pinv(X_b).dot(y)) # SVD 사용 역행렬 구하기
 ```
 
-    [[3.96871983]
-     [3.13682135]]
+    [[3.95164201]
+     [3.08596085]]
 
+- 마찬가지로 SVD를 사용해 유사 역행렬을 구하는 넘파이의 pinv 함수 사용해도 결과가 같음
 
+### 경사 하강법
 
 ```python
 ### 경사 하강법을 사용한 선형회귀 접근 ###
-eta = 0.1
+eta = 0.1 # 학습률, 내려가는 크기
 n_iterations = 1000
 m = 100
-theta = np.random.randn(2,1)
+theta = np.random.randn(2,1) # 무작위로 초기화
 for iteration in range(n_iterations):
     gradients = 2/m * X_b.T.dot(X_b.dot(theta) - y)
     theta = theta - eta * gradients
@@ -131,10 +158,21 @@ for iteration in range(n_iterations):
 print(theta)
 ```
 
-    [[4.22817414]
-     [2.80739908]]
+    [[3.95164201]
+     [3.08596085]]
 
+- 경사 하강법을 이용해서 세타값 구하기
+  $$
+  (대충 경사하강법 공식) \hat\theta = (X^T\cdot X)^{-1}\cdot X^T\cdot y
+  $$
 
+```python
+X_new = np.array([[0],[2]])
+X_new_b = np.c_[np.ones((2,1)), X_new]
+y_predict = X_new_b.dot(theta_best)
+# (3) y_predict 출력 확인
+print(y_predict)
+```
 
 ```python
 # (10) X_new_b.dot(theta) 출력 확인
@@ -176,7 +214,7 @@ plt.show()
 ```
 
 
-![png](output_11_0.png)
+![png](output_18_0.png)
 
 
 
@@ -212,7 +250,7 @@ plt.show()
 ```
 
 
-![png](output_12_0.png)
+![png](output_19_0.png)
 
 
 
@@ -301,7 +339,7 @@ plt.show()
 ```
 
 
-![png](output_17_0.png)
+![png](output_24_0.png)
 
 
 
@@ -324,7 +362,7 @@ plt.show()
 ```
 
 
-![png](output_18_0.png)
+![png](output_25_0.png)
 
 
 
@@ -381,7 +419,7 @@ plt.show()
 
 
 
-![png](output_22_1.png)
+![png](output_29_1.png)
 
 
 
@@ -418,7 +456,7 @@ plt.show()
 
 
 
-![png](output_23_1.png)
+![png](output_30_1.png)
 
 
 
@@ -462,7 +500,7 @@ plt.show()
 ```
 
 
-![png](output_24_0.png)
+![png](output_31_0.png)
 
 
 
@@ -513,7 +551,7 @@ plt.show()
 ```
 
 
-![png](output_25_0.png)
+![png](output_32_0.png)
 
 
 
