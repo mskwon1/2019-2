@@ -57,5 +57,3 @@
 - Running times of sorting algorithms
 
   ![1569854045093](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1569854045093.png)
-
-  
