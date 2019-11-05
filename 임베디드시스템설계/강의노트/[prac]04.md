@@ -17,7 +17,23 @@
 - 안 바뀌었으면, 메세지 안 띄운다
 
 ~~~python
+import RPi.GPIO as GPIO
+import time
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(18, GPIO.IN)
+
+current = None
+
+while (True) :
+    temp = GPIO.input(18)
+    if (temp != current) :
+        if (temp == 1) :
+            print "Light turned off"
+        else :
+            print "Light turned on"
+        current = temp
+    time.sleep(0.1)
 ~~~
 
 ## Servo Motor

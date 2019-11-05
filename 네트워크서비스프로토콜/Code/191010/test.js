@@ -13,6 +13,7 @@ function templateHTML(title, list, body){
   <body>
     <h1><a href="/">WEB</a></h1>
     ${list}
+    <a href = "/create">create</a>
     ${body}
   </body>
   </html>
@@ -35,17 +36,17 @@ var app = http.createServer(function(request,response){
     var pathname = url.parse(_url, true).pathname;
     if(pathname === '/'){
       if(queryData.id === undefined){
-        fs.readdir('./data', function(error, filelist){
+        fs.readdir('./data', function(error, filelist) {
           var title = 'Home';
           var description = 'Hello, Node.js';
           var list = templateList(filelist);
           var template = templateHTML(title, list, `<h2>${title}</h2>${description}`);
           response.writeHead(200);
           response.end(template);
-        })
+        });
       } else {
-        fs.readdir('.data', function(error, filelist){
-          fs.readFile(`data/${queryData.id}`, 'utf8', function(err, description){
+        fs.readdir('./data', function(error, filelist){
+          fs.readFile(`./data/${queryData.id}`, 'utf8', function(err, description){
             var title = queryData.id;
             var list = templateList(filelist);
             var template = templateHTML(title, list, `<h2>${title}</h2>${description}`);
@@ -54,12 +55,28 @@ var app = http.createServer(function(request,response){
           });
         });
       }
+    } else if (pathname == '/create') {
+        fs.readdir('./data', function(error, filelist) {
+          var title = 'WEB - create';
+          var list = templateList(filelist);
+          var template = templateHTML(title, list, `
+            <form action = "http://localhost:3000/process_create" method = "post">
+            <p> <input type = "text" name = "title" placeholder = "title"></p>
+            <p>
+              <textarea name = "description" placeholder = "description"></textarea>
+            </p>
+            <p>
+              <input type = "submit">
+            </p>
+            `);
+        })
+        response.writeHead(200);
+        response.end(template);
     } else {
       response.writeHead(404);
       response.end('Not found');
     }
-
-
-
 });
+
+console.log('waiting at port 3000')
 app.listen(3000);

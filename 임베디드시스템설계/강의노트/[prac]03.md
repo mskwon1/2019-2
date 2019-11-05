@@ -1,171 +1,198 @@
-### LED - On / Off
+## Ultrasonic Sensor
+
+- SRF05
+
+  - SRF04에 비해 3~4 미터 사정거리 증가
+
+  - Mode 1(SRF04와 호환, Separate TRIG, ECHO)
+
+    ![1571051101787](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571051101787.png)
+
+    - Uses separate TRIG and ECHO pins, simplest mode to use
+    - leave the MODE pin unconnected
+
+  ![1571051157258](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571051157258.png)
+
+  - Mode 2 : Single pin for both TRIG and ECHO
+
+    - uses a single pin for both TRIG and ECHO signals
+    - designed to save valuable pins on embedded controllers
+    - connect MODE pin to the 0V GROUND pin
+    - ECHO and TRIG appear on same pin
+
+    ![1571051241494](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571051241494.png)
+
+  - Calculating Distance
+
+    - Supply short 10uS pulse to the TRIG input to start ranging
+    - SRF05 will send out an 8 cycle burst of ultrasound at 40KHz and raise its echo line high, listens for echo. 
+    - As soon as it detects echo, lowers echo line again
+    - ECHO line : a pulse whose width is proportional to the distance to the object
+    - Timing the pulse = calculate the range in inches/centimeters
+    - If nothing detected, SRF05 will lower its echo line anyways after about 30mS
+
+  - SRF04 : Provides echo pulse proportional to distance - width of pulse is measured in uS
+
+    - divide by 58 will give cm result
+    - divide by 148 will give inches result
+
+  - SRF05 : can be triggered as fast as every 50ms, or 20 times each second
+
+    - wait 50ms before next trigger, even srf05 detecs a close object and the echo pulse is shorter
+    - this is to ensure ultrasonic beep has faded away and will not cause a false echo or the next ranging
+
+  - 남은 5개 핀에 아무것도 연결하지 말 것(Flash Memory 관련된 일 할 때 사용)
+
+  - Changing beam pattern and beam width
+
+    - 안됨
+
+### Prototype Circuit
+
+![1571051809882](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571051809882.png)
+
+### Code
 
 ~~~python
-import time
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(17,GPIO.OUT)
-
-on_time = 0.1 # time led is ON in seconds
-off_time = 0.9 # time led is OFF in seconds
-
-while True:
-    GPIO.output(17, GPIO.HIGH)
-    time.sleep(on_time)
-    GPIO.output(17, GPIO.LOW)
-    time.sleep(off_time)
-~~~
-
-### LED - PWM(Pulse Width Modulation)
-
-- PWM은 빠르게 ON/OFF를 반복하는 것
-
-  ![1570965615137](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570965615137.png)
-
-  - 신호의 지속시간으로 위치를 제어
-
-~~~python
+# uss_test.py
 #!/usr/bin/env python
 import RPi.GPIO as GPIO
 import time
 
-LedPin = 17
+TRIG = 11
+ECHO = 12
+/*
+count = 0
+success = 0
+LIMIT = 101
+MAX_SUCCESS = 152
+MIN_SUCCESS = 148
+*/
 
-GPIO.setmode(GPIO.BCM) # BCM 넘버링 사용(T자 케이블)
-GPIO.setup(LedPin, GPIO.OUT) # Set pin mode as OUT
-GPIO.output(LedPin, GPIO.LOW) # Set pin to low(0V)
+def setup():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(TRIG, GPIO.OUT)
+    GPIO.setup(ECHO, GPIO.IN)
 
-p = GPIO.PWM(LedPin, 1000) # Set frequency to 1 KHz
-p.start(0) # Start PWM output, Duty Cycle = 0
+def distance():
+    GPIO.output(TRIG, 0)
+    time.sleep(0.000002)
 
-try:
+    GPIO.output(TRIG, 1)
+    time.sleep(0.00001)
+    GPIO.output(TRIG, 0)
+    
+    while GPIO.input(ECHO) == 0:
+        a = 0
+            
+    time1 = time.time()
+
+    while GPIO.input(ECHO) == 1:
+        a = 1
+            
+    time2 = time.time()
+     
+    during = time2 - time1
+    return during * 340 / 2 * 100
+            
+def loop():
     while True:
-        for dc in range(0, 101, 2): #increase duty cycle : 0 ~ 100
-            p.ChangeDutyCycle(dc) # change duty cycle
-            time.sleep(0.01)
+        dis = distance()
+        print dis, 'cm'
+        time.sleep(0.05) # Q3 : Sleep time change(50ms)
+    /*	# Q4  
+    global count
+    while count < (LIMIT+1):
+        dis = distance()
+        measure(dis)
+        print dis, 'cm'
         time.sleep(0.05)
-        for dc in range(100, -1, -2): # decrease duty cycle : 100 ~ 0
-        	p.ChangeDutyCycle(dc)
-            time.sleep(0.01)
-        time.sleep(0.05)
-        
-except KeyboardInterrupt:
-    p.stop()
-    GPIO.output(LedPin, GPIO.HIGH) # Turn off all leds
+        count += 1
+    */
+                
+def destroy():
     GPIO.cleanup()
-~~~
 
-#### C
+/*
+def measure(dis):
+	global success
+    if (dis > MIN_SUCCESS) and (dis < MAX_SUCCESS):
+        success += 1
+*/    
+    
+if __name__ == "__main__":
+    setup()
+    try:
+        loop()
+    except KeyboardInterrupt:
+        destroy()
+~~~
 
 ~~~c
-#include <unistd.h>
+/*******************************
+* Ultra Sonic Raning module Pin VCC should
+* be connected to 5V power.
+******************************/
+#include <wiringPi.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <string.h>
 #include <sys/time.h>
+#define Trig 0
+#define Echo 1
 
-const char *PATH_GPIO_EXPORT = "/sys/class/gpio/export";
-const char *PATH_GPIO_UNEXPORT = "/sys/class/gpio/unexport";
-const char *PATH_GPIO_17_DIRECTION = "/sys/class/gpio/gpio17/direction";
-const char *PATH_GPIO_17_VALUE = "/sys/class/gpio/gpio17/value";
-
-#define GPIO_NUM 17
-typedef enum {
-    OFF = 0,
-    ON
-} gpio_state ;
-
-void gpio_init();
-void gpio_exit();
-void set_gpio_state(gpio_state state);
-void delay_micro(int delay_micros);
-
-FILE *GPIO_EXPORT;
-FILE *GPIO_17_DIRECTION;
-FILE *GPIO_17_VALUE;
-
-int main()
+void ultraInit(void)
 {
-    int time = 0;
-    gpio_state state = OFF;
-    gpio_init();
-/**************** insert your code here ******************/
+    pinMode(Echo, INPUT);
+    pinMode(Trig, OUTPUT);
+}
+
+float disMeasure(void)
+{
+    struct timeval tv1;
+    struct timeval tv2;
+    
+    long time1, time2;
+    float dis;
+
+    digitalWrite(Trig, LOW);
+    delayMicroseconds(2);
+    
+    digitalWrite(Trig, HIGH);
+    delayMicroseconds(10); //发出超声波脉冲
+    digitalWrite(Trig, LOW);
+    
+    while(!(digitalRead(Echo) == 1));
+    gettimeofday(&tv1, NULL); //获取当前时间
+    
+    while(!(digitalRead(Echo) == 0));
+    gettimeofday(&tv2, NULL); //获取当前时间
+    
+    time1 = tv1.tv_sec * 1000000 + tv1.tv_usec; //微秒级的时间
+    time2 = tv2.tv_sec * 1000000 + tv2.tv_usec;
+   
+    dis = (float)(time2 - time1) / 1000000 * 34000 / 2; //求出距离
+   
+    return dis;
+}
+int main(void)
+{
+    float dis;
+    if(wiringPiSetup() == -1){ /* when initialize wiring failed,
+        									print messageto screen */
+        printf("setup wiringPi failed !");
+        return 1;
+    }
+    
+    ultraInit();
+    
     while(1) {
-        set_gpio_state(ON);
-        delay_micro(1000000); // 1 sec delay
-        set_gpio_state(OFF);
-        delay_micro(1000000); // 1 sec delay
+        dis = disMeasure();
+        printf("%0.2f cm\n",dis);
+        delay(1000);
     }
-/*********************************************************/
-    gpio_exit();
-}
-
-void gpio_init()
-{
-    if ((GPIO_EXPORT = fopen(PATH_GPIO_EXPORT, "w")) == NULL) {
-        printf("%s open failed\n", PATH_GPIO_EXPORT);
-        exit(0);
-    }
-    
-    fprintf(GPIO_EXPORT, "%d", GPIO_NUM);
-    fclose(GPIO_EXPORT);
-    
-    if ((GPIO_17_DIRECTION = fopen(PATH_GPIO_17_DIRECTION, "w")) == NULL)
-    {
-        printf("%s open failed\n", PATH_GPIO_17_DIRECTION);
-        exit(0);
-    }
-    
-    fprintf(GPIO_17_DIRECTION, "out");
-    fclose(GPIO_17_DIRECTION);
-    
-    if ((GPIO_17_VALUE = fopen(PATH_GPIO_17_VALUE, "w")) == NULL) {
-        printf("%s open failed\n", PATH_GPIO_17_VALUE);
-        exit(0);
-    }
-}
-
-void gpio_exit()
-{
-    FILE *GPIO_UNEXPORT;
-    fclose(GPIO_17_VALUE);
-    
-    if ((GPIO_UNEXPORT = fopen(PATH_GPIO_UNEXPORT, "w")) == NULL) {
-        printf("%s open failed\n", PATH_GPIO_UNEXPORT);
-        exit(0);
-    }
-    
-    fprintf(GPIO_UNEXPORT, "%d", GPIO_NUM);
-    fclose((int) GPIO_UNEXPORT);
-}
-
-void set_gpio_state(gpio_state state)
-{
-    fprintf(GPIO_17_VALUE, "%d", state);
-    fflush(GPIO_17_VALUE);
-}
-void delay_micro(int delay_micros)
-{
-    struct timeval now, pulse;
-    int cycles, micros;
- 	cycles = 0;
-    gettimeofday(&pulse, NULL);
-    micros = 0;
-    
-    while (micros < delay_micros) {
-        ++cycles;
-        gettimeofday(&now, NULL);
-       
-        if (now.tv_sec > pulse.tv_sec)
-            micros = 1000000L;
-        else
-            micros = 0;
-        
-        micros = micros + (now.tv_usec - pulse.tv_usec);
-    }
+    return 0;
 }
 ~~~
 
-
-
+- 3 : Modify the above code so that distance is measured at every 50ms
+- 4 : For a given target distance, repeat measurement 100 times and evaluate how your measurements were successful. For example, aim at wall with 2m distance, and take 10 samples like : 2.0 ......... 1.9. If you set the threshold range 1.9 ~ 2.1m, the measurement success ratio becomes 70%
+- 5 : Discuss the limit and fault of the above code

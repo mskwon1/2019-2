@@ -46,9 +46,11 @@
 
   ![1570515140924](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515140924.png)
 
-- Reconstructing a solution
+- Reconstructing a solution : $\theta(n^2)$
 
-  ![1570515156491](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515156491.png)
+  ![1571282085799](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571282085799.png)
+  
+  
 
 ## Matrix Multiplication
 
@@ -58,7 +60,7 @@
 
 - 행렬 곱셈의 순서를 정하는 문제(곱셈 연산 X)
 
-  ![1570515223097](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515223097.png)
+  ![1571282127062](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571282127062.png)
 
 - 순서대로
 
@@ -66,17 +68,28 @@
 
   - 최적해의 값을 재귀적으로 정의한다
 
-    ![1570515251748](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515251748.png)
+    ![1571282166771](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571282166771.png)
 
   - 최적해의 값을 일반적으로 상향식 방법으로 계산한다
 
     ![1570515272972](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515272972.png)
 
-    ![1570515300033](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515300033.png)
+    ![1571282196553](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571282196553.png)
 
+    ![1571282221483](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571282221483.png)
+
+    ![1571282242676](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571282242676.png)
+  
+    ![1571282310490](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571282310490.png)
+  
   - 계산된 정보들로부터 최적해를 구성한다
-
+  
     ![1570515314819](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515314819.png)
+  
+- Elements of dynamic programming
+
+  - Optimal Structure : 문제의 최적해가 subproblem의 최적해를 포함한다
+  - Overlapping Subproblems : 최적화 문제의 부분 문제를 풀기 위한 재귀 알고리즘이 같은 문제를 반복해서 푼다
 
 ## Longest Common Subsequence(LCS)
 
@@ -84,14 +97,29 @@
 
   ![1570515440220](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515440220.png)
 
-- Common subsequence Z of X and Y : Z is subsequence of X, and of Y
+- Brute Force approach
 
-![1570515456093](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515456093.png)
+  - LCS : Longest Common Subsequence
+  - X의 모든 subsequence $X'$를 찾음($2^m$개, m = X의 길이)
+  - $X'$이 Y의 subsequence 인지 확인하고 가장 긴 것을 찾음
+  - $O(n2^m) n$ = Y의 길이
 
-![1570515470485](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515470485.png)
+- Common subsequence Z of X and Y : Z is subsequence of X, and of Y![1570515456093](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515456093.png)
 
-- Constructing LCS (STEP 4)
+  ![1571283573144](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571283573144.png)
 
-  ![1570515490475](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1570515490475.png)
+  ![1571283582498](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571283582498.png)
+
+  ![1571283598730](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571283598730.png)
+
+  ![1571283617298](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571283617298.png)
+
+  ![1571283638864](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571283638864.png)
+
+  ![1571283711287](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571283711287.png)
+
+  - Constructing LCS (STEP 4)
+
+  ![1571283745450](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1571283745450.png)
 
 - Maximum subarray나 matrix multiplication을 dynamic programming으로 풀 수 있는가?

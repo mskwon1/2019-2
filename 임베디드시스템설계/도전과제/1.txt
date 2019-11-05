@@ -1,0 +1,17 @@
+도전과제 #1
+Interrupt 방식을 사용하여 초음파센서 거리측정 구현.
+Sampling rate: 20Hz (= sampling period: 50ms)
+
+1분간 측정시 60 x 20 = 1200개의 distance value가 수집되어야 함.
+RPi에서 정확한 timer를 구현하기 위한 방법에 대한 검색 요망.
+주의: 측정이 완료된 후 단순히 50ms를 기다리는 경우 측정에 걸리는 시간이 누적되어 정확한 20Hz sampling rate를 얻을 수 없음.
+측정을 시도하기 전 echo 값이 1인 경우 distance value는 직전 값을 출력하고 추가 message로 “NR” (sensor not responding)을 출력할 것.
+측정 명령을 내리고 echo 값이 1로 올라간 순간부터 30ms 이내에 echo가 0으로 내려가지 않는 경우 distance value는 직전 값을 출력하고 추가 message로 “TO” (sensor timeout)을 출력할 것.
+
+사용언어: 자유
+제출방식
+email 제출: ysjoo@cs.kookmin.ac.kr
+email 제목: [ESD 2019-2] 도전과제 #1 학번 성명
+소스코드와 구현 방식 설명을 담은 report (분량자유, 짧을수록 좋습니다)
+제출된 코드는 수준 평가 후 일정 기준 충족시 수업참여도 점수에 반영함과 동시에 수업 홈페이지를 통해 공개합니다.
+제출마감: 10월 31일 23:59
