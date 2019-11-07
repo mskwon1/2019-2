@@ -130,3 +130,40 @@
 ![image-20191105131256406](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191105131256406.png)
 
 ### Strongly connected components
+
+- Undirected graph
+  - **connected** if every vertex is reachable from all other vertices
+  - **connected components** of a graph are the equivalence classes of vertices under the 'is reachable from' relation
+- Directed graph
+  - **strongly connected** if every two vertices are reachable from each other
+  - **strongly connected components** of a directed graph are the equivalence classes of vertices under the 'are mutually reachable' relation
+
+![image-20191107125252490](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191107125252490.png)
+
+![image-20191107125309781](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191107125309781.png)
+
+#### DFS(G)
+
+<img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191107125502780.png" alt="image-20191107125502780" style="zoom: 80%;" />
+
+#### Compute $G^T$
+
+- All directions are reveresd
+
+  ![image-20191107125540937](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191107125540937.png)
+
+#### DFS($G^T$)
+
+- Vertices are selected in order of decreasing u.f
+
+  ![image-20191107125609571](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191107125609571.png)
+
+#### SCC
+
+![image-20191107125645792](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191107125645792.png)
+
+### Euler Tour
+
+- An Euler tour of a strongly connected, directed graph $G = (V,E)$ is a cycle that traverses each edge of $G$ exactly once, although it may visit a vertex more than once
+  - $G$ has an Euler tour iff in-dgree(v) = out-degree(v) for all $v \in V$
+  - The Euler tour algorithm runs in $O(E)$

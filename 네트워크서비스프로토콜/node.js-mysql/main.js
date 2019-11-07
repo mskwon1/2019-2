@@ -61,9 +61,12 @@ var app = http.createServer(function(request,response){
         })
       }
     } else if(pathname === '/create'){
-      fs.readdir('./data', function(error, filelist){
+      db.query(`SELECT * FROM topic`, function(error, topics) {
+        if (error) {
+          throw error;
+        }
         var title = 'WEB - create';
-        var list = template.list(filelist);
+        var list = template.list(topics);
         var html = template.HTML(title, list, `
           <form action="/create_process" method="post">
             <p><input type="text" name="title" placeholder="title"></p>
@@ -77,7 +80,7 @@ var app = http.createServer(function(request,response){
         `, '');
         response.writeHead(200);
         response.end(html);
-      });
+      })
     } else if(pathname === '/create_process'){
       var body = '';
       request.on('data', function(data){
@@ -87,9 +90,18 @@ var app = http.createServer(function(request,response){
           var post = qs.parse(body);
           var title = post.title;
           var description = post.description;
-          fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-            response.writeHead(302, {Location: `/?id=${title}`});
-            response.end();
+          var id;
+          var now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+          db.query('SELECT * FROM topic', function(error, topics) {
+            id = topics.length+1;
+            db.query(`INSERT INTO `topic` VALUES(${id},${title},${description}, ${now},1)`, function(error2, result) {
+              if (error2) {
+                throw error2;
+              }
+              response.writeHead(302, {Location:`/?id=${id}`})
+              console.log('')
+              response.end()
+            })
           })
       });
     } else if(pathname === '/update'){
