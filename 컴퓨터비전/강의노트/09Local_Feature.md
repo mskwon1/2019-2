@@ -164,6 +164,110 @@
 
 ![1572846105060](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1572846105060.png)
 
+#### Harris Detector : Steps
+
+1. Compute Gaussian derivatives at each pixel
+2. Compute second moment matrix M in a Gaussian window around each pixel
+3. Compute corner response function R
+4. Threshold R
+5. Find local maxima of response function (non-maximum suppression)
+
+<img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111135742342.png" alt="image-20191111135742342" style="zoom:50%;" />
+
+- Compute corner response R
+
+<img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111135752324.png" alt="image-20191111135752324" style="zoom:50%;" />
+
+- Find points with large corner response R > threshold
+
+  <img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111135828488.png" alt="image-20191111135828488" style="zoom:50%;" />
+
+- Take only the points of local maxima of R
+
+  <img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111135859508.png" alt="image-20191111135859508" style="zoom:50%;" />
+
+  <img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111135921205.png" alt="image-20191111135921205" style="zoom:50%;" />
+
+#### Invariance and Covariance 
+
+- We want corner locations to be invariant to **photometric transformations** and covariant to **geometric transformations**
+  - **Invariance** : Image is transformed and corner locations do not change
+    - 카메라가 회전을 하더라도 코너의 특성은 유지
+  - **Covariance** : If we have two transformed versions of the same image, features should be detected in corresponding locations
+    - 
+- 해리스 단점 : 조명환경에 따라서 코너가 생길수도, 없어질수도 있다
+
 ### 2차 미분을 사용한 방법
 
+- 헤시안 행렬
+
+  ![image-20191111140500009](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111140500009.png)
+
+  - 가우시안을 포함한 헤시안 행렬
+
+    ![image-20191111140513169](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111140513169.png)
+
+    - 해리스 코너에 가우시안 씌운거
+
 ### 슈산
+
+<img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111140644867.png" alt="image-20191111140644867" style="zoom:67%;" />
+
+- 원리
+
+  - 중심점과 인근 지역의 밝기 값이 **얼마나 유사한지**에 따라 특징 가능성 결정
+
+    <img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111140710023.png" alt="image-20191111140710023" style="zoom: 80%;" />
+
+    - 차이가 있느냐 없느냐(코너, 에지는 구분 X)
+
+## 위치 찾기 알고리즘
+
+- 모라벡
+
+  ![image-20191111141259389](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111141259389.png)
+
+- 해리스
+
+  ![image-20191111141305057](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111141305057.png)
+
+- 헤시안의 행렬식
+
+  ![image-20191111141311540](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111141311540.png)
+
+- LOG
+
+  ![image-20191111141316648](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111141316648.png)
+
+- 슈산
+
+  ![image-20191111141322150](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111141322150.png)
+
+  - 특징이 될 수 있느냐 아니냐만 구분 가능(코너, 엣지등의 인식은 X)
+
+### 해리스 적용 예
+
+- 큰 값이 밀집되어 나타남 -> 대표점 선택 필요
+
+  <img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111141551827.png" alt="image-20191111141551827" style="zoom:67%;" />
+
+- 비최대 억제
+
+  - 이웃화소보다 크지 않으면 억제됨 -> 즉, 지역 최대만 특징점으로 검출
+
+    <img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111141616501.png" alt="image-20191111141616501" style="zoom:80%;" />
+
+- 이동과 회전에 불변인가
+
+  - 이동이나 회전 변환이 발생하여도 같은 지점에서 관심점이 검출되나? : 그렇다
+
+    <img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111141504792.png" alt="image-20191111141504792" style="zoom:67%;" />
+
+- 스케일에 불변인가
+
+  - 스케일이 변해도 같은 지점에서 관심점이 검출되나?
+
+    - 연산자 크기가 고정되어 있어 **그렇지 않다**
+    - 스케일 변화에 대처하려면 **연산자 크기를 조절하는 기능**이 필수적
+
+    <img src="C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111141743844.png" alt="image-20191111141743844" style="zoom:67%;" />
