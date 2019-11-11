@@ -6,7 +6,7 @@ module.exports = {
     <html>
     <head>
       <link rel='stylesheet' href='/css?css=style.css'>
-      <title>Travel Mate</title>
+      <title>나의 여행 다이어리</title>
       <meta charset = "utf-8">
     </head>
     <body>
@@ -21,7 +21,7 @@ module.exports = {
         </div>
       </div>
       <div class = "main">
-        <h1 align = 'center' id='main_title'><a href="/">Travel Mate</a></h1>
+        <h1 align = 'center' id='main_title'><a href="/">나의 여행 다이어리</a></h1>
         ${control}
         ${body}
       </div>

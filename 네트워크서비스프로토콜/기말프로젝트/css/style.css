@@ -76,6 +76,7 @@ url('/fonts?font=NanumGothic.woff') format('woff');}
   vertical-align: top;
   width:50%;
   height:100%;
+
 }
 
 .main > .activity > .text_section > .place_name {
@@ -88,12 +89,16 @@ url('/fonts?font=NanumGothic.woff') format('woff');}
   font-size: 15px;
   color: #ff0d00;
   height:25%;
+  font-weight : bold;
+  font-style : italic;
+  margin-bottom: 3px;
 }
 
 .main > .activity > .text_section> .activity_name {
   font-size: 20px;
   font-weight: bold;
   height:25%;
+  margin-bottom: 10px;
 }
 
 .main > .activity > .text_section > .activity_description {

@@ -31,70 +31,56 @@ var app = http.createServer(function(request,response) {
       })
     }
   } else if (pathname == '/schedule') {
-    db.query(`SELECT * FROM consists WHERE SCHEDULE_ID = ${queryData.id}`, function(err,consists) {
-      if (err) {
-        // 없는 schedule id
-        response.writeHead(404);
-        response.end('<h1>404 NOT FOUND</h1>')
-      } else {
-        // console.log(consists);
-        var body = '';
-        db.query(`SELECT * FROM schedule WHERE SCHEDULE_ID = ${queryData.id}`, function(err2,schedule) {
-          if (err2) {
-            throw err2;
-          }
-          body += `<div class='schedule_name'>${schedule[0].SCHEDULE_NAME}</div>
-                   <div class='schedule_description'>✈️${schedule[0].SCHEDULE_DESCRIPTION}</div>`;
-        })
+      var body = '';
+      db.query(`SELECT * FROM schedule WHERE SCHEDULE_ID = ${queryData.id}`, function(err2,schedule) {
+        var schedule_name = schedule[0].SCHEDULE_NAME
+        var schedule_description = schedule[0].SCHEDULE_DESCRIPTION
+        db.query(`SELECT * FROM consists JOIN activity USING (ACTIVITY_ID) JOIN place USING (PLACE_ID) WHERE SCHEDULE_ID = ${queryData.id}`, function(err,consists) {
+          let promise = new Promise(function(resolve, reject) {
+            body += addBody(body, consists, schedule_name, schedule_description)
+            resolve(body)
+          })
 
-        async.waterfall([
-          function(callback) {
+          function addBody(body, consists, schedule_name, schedule_description) {
+            body += `<div class='schedule_name'>${schedule_name}</div>
+                      <div class='schedule_description'>✈️${schedule_description}</div><hr>`;
             for (var i=0; i<consists.length; i++) {
               var day = consists[i].CONSISTS_DAY;
               var time = consists[i].CONSISTS_TIME;
-              db.query(`SELECT * FROM activity WHERE ACTIVITY_ID = ${consists[i].ACTIVITY_ID}`, function(err3, activity) {
-                var activity_name = activity[0].ACTIVITY_NAME;
-                var activity_description = activity[0].ACTIVITY_DESCRIPTION;
-                var activity_image = activity[0].ACTIVITY_IMAGE;
-                // let place_name;
-                db.query(`SELECT * FROM place WHERE PLACE_ID = ${activity[0].PLACE_ID}`,function(err4, place) {
-                  var place_name = place[0].PLACE_NAME;
+              var activity_name = consists[i].ACTIVITY_NAME;
+              var activity_description = consists[i].ACTIVITY_DESCRIPTION;
+              var activity_image = consists[i].ACTIVITY_IMAGE;
+              var place_name = consists[i].PLACE_NAME;
 
-                  body += `
-                    <div class="activity">
-                    <div class="text_section">
-                    <div class="activity_time">${day}일차 ${time}</div>
-                    <div class="place_name">${place_name}</div>
-                    <div class="activity_name">${activity_name}</div>
-                    <div class="activity_description">${activity_description}</div></div>`
-                  if (activity_image != null) {
-                    body += `<div class="activity_image"><img src=${activity_image}></div></div>`
-                  } else {
-                    body += `<div class="activity_image"></div></div>`
-                  }
-                  console.log(i);
-                  console.log(body);
-                  if (i== consists.length-1) {
-                    callback(null, body);
-                  }
-                });
-              })
+              body += `
+                <div class="activity">
+                <div class="text_section">
+                <div class="activity_time">${day}일차 🕒 ${time}</div>
+                <div class="place_name">${place_name}</div>
+                <div class="activity_name">${activity_name}</div>
+                <div class="activity_description">${activity_description}</div></div>`
+
+              if (activity_image != null) {
+                body += `<div class="activity_image"><img src=${activity_image}></div></div>`
+              } else {
+                body += `<div class="activity_image"></div></div>`
+              }
             }
+
+            return body
           }
-        ],
-        function (err, body) {
-          db.query('SELECT * FROM schedule', function(error, schedules) {
 
-            var schedule_list = template.schedule_list(schedules);
-            var review_list = template.review_list(schedules);
-            var html = template.HTML(schedule_list, review_list, '', body);
-            response.writeHead(200, {'Content-Type': 'text/html'});
-            response.end(html);
+          promise.then(function(contents) {
+            db.query('SELECT * FROM schedule', function(error, schedules) {
+              var schedule_list = template.schedule_list(schedules);
+              var review_list = template.review_list(schedules);
+              var html = template.HTML(schedule_list, review_list, '', body);
+              response.writeHead(200, {'Content-Type': 'text/html'});
+              response.end(html);
+            })
           })
-        });
-
-      }
-    })
+        })
+      })
   } else if (pathname == '/review') {
 
   } else if (pathname == '/images') {
@@ -106,7 +92,6 @@ var app = http.createServer(function(request,response) {
       response.end(data);
     });
   } else if (pathname == '/css') {
-    // console.log(queryData.css)
     fs.readFile(`./css/${queryData.css}`, function(css_error, data){
       if (css_error) {
         throw css_error;
