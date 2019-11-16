@@ -13,11 +13,11 @@ module.exports = {
       <div class = "sidenav">
         <div class = "submenu">여행일정공유
           ${schedule_list}
-          <a id='new_schedule' href="/schedule_create">새로만들기</a>
+          <a id='new_schedule' href="/create_schedule">새로만들기</a>
         </div>
         <div class = "submenu">여행후기
           ${review_list}
-          <a id='new_review' href="/review_create">새로쓰기</a>
+          <a id='new_review' href="/create_review">새로쓰기</a>
         </div>
       </div>
       <div class = "main">
@@ -48,5 +48,38 @@ module.exports = {
     }
 
     return list;
+  },timebox:function() {
+    var html = '<select name="time">';
+
+    var hour, min;
+    for (var i=0;i<49;i++) {
+      if(i < 20) {
+        hour = '0' + parseInt(i/2);
+      } else {
+        hour = '' + parseInt(i/2);
+      }
+
+      if (i % 2 == 0) {
+        min = '00'
+      } else {
+        min = '30'
+      }
+
+      time = hour + ':' + min + ':00';
+
+      html += `<option value=${time}>${time}</option>`
+    }
+
+    html += '</select>'
+
+    return html
+  },placeCombobox:function(values) {
+    var html = ''
+    for (var i=0;i<values.length;i++) {
+      html += `<option value=${values[i].PLACE_ID}>${values[i].PLACE_NAME}</option>`
+
+    }
+
+    return html;
   }
 }

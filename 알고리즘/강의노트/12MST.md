@@ -23,6 +23,7 @@
   - prior to each iteration, A is a subset of some MST
 
   ![image-20191112121559716](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191112121559716.png)
+  
   - spanning tree가 될 때까지 safe edge만 계속 더하기
 
 #### Theorem 23.1
@@ -60,7 +61,7 @@
 
 - Differs from Kruskal's in that we grow a single supernode $S$ instead of growing multiple ones at the same time
 
-  ![image-20191112125158281](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191112125158281.png)
+  ![image-20191114131517279](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191114131517279.png)
 
   ![image-20191112125442867](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191112125442867.png)
 
