@@ -103,6 +103,15 @@ url('/fonts?font=NanumGothic.woff') format('woff');}
   margin-bottom: 3px;
 }
 
+.main > .activity > .text_section form > .activity_time input {
+  width: 50px;
+}
+
+.main > .activity > .text_section form > .place_name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
 .main > .activity > .text_section> .activity_name {
   font-size: 20px;
   font-weight: bold;
@@ -113,6 +122,15 @@ url('/fonts?font=NanumGothic.woff') format('woff');}
 .main > .activity > .text_section > .activity_description {
   font-size: 15px;
   height:25%;
+}
+
+.main > .activity > .submit_button {
+  text-align: center;
+  margin-top: 3px;
+}
+
+.main > .activity > .submit_button input {
+  width: 100%;
 }
 
 .main > .activity > .activity_image {

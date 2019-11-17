@@ -48,8 +48,8 @@ module.exports = {
     }
 
     return list;
-  },timebox:function() {
-    var html = '<select name="time">';
+  },timebox:function(default_time) {
+    var html = '';
 
     var hour, min;
     for (var i=0;i<49;i++) {
@@ -67,10 +67,12 @@ module.exports = {
 
       time = hour + ':' + min + ':00';
 
-      html += `<option value=${time}>${time}</option>`
+      if (default_time == time) {
+        html += `<option value=${time} selected="selected">${time}</option>`
+      } else {
+        html += `<option value=${time}>${time}</option>`
+      }
     }
-
-    html += '</select>'
 
     return html
   },placeCombobox:function(values) {
@@ -78,6 +80,13 @@ module.exports = {
     for (var i=0;i<values.length;i++) {
       html += `<option value=${values[i].PLACE_ID}>${values[i].PLACE_NAME}</option>`
 
+    }
+
+    return html;
+  },activityCombobox:function(values) {
+    var html = ''
+    for (var i=0;i<values.length;i++) {
+      html += `<option value=${values[i].ACTIVITY_ID}>${values[i].ACTIVITY_NAME}</option>`
     }
 
     return html;

@@ -1,11 +1,10 @@
 var mysql = require('mysql')
 var http = require('http')
-var pw = require('./pw.js')
 
 var db = mysql.createConnection({
   host : 'localhost',
   user : 'root',
-  password : pw.pw,
+  password : /*니 패스워드 */,
   database : 'games'
 });
 db.connect();
