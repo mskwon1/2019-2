@@ -7,6 +7,8 @@ var url = require('url');
 var path = require('path');
 var template = require('./lib/template.js');
 var async = require('async');
+var multiparty = require('multiparty');
+var util = require('util');
 
 var db = mysql.createConnection({
   host : 'localhost',
@@ -36,6 +38,7 @@ var app = http.createServer(function(request,response) {
       db.query(`SELECT * FROM schedule WHERE SCHEDULE_ID = ${queryData.id}`, function(err2,schedule) {
         var schedule_name = schedule[0].SCHEDULE_NAME
         var schedule_description = schedule[0].SCHEDULE_DESCRIPTION
+        var schedule_country = schedule[0].SCHEDULE_COUNTRY
         db.query(`SELECT * FROM consists JOIN activity USING (ACTIVITY_ID) JOIN place USING (PLACE_ID) WHERE SCHEDULE_ID = ${queryData.id}
                       ORDER BY CONSISTS_DAY, CONSISTS_TIME`, function(err,consists) {
           let promise = new Promise(function(resolve, reject) {
@@ -44,7 +47,7 @@ var app = http.createServer(function(request,response) {
           })
 
           function addBody(body, consists, schedule_name, schedule_description, id) {
-            body += `<div class='schedule_name'>${schedule_name}</div>
+            body += `<div class='schedule_name'>[${schedule_country}]${schedule_name}</div>
                       <div class='schedule_description'>✈️${schedule_description}</div>
                       <hr>
                       <div class='controls'>
@@ -98,6 +101,8 @@ var app = http.createServer(function(request,response) {
           <p><input type="text" name="name" placeholder="Schedule Name"></p>
           <p>설명</p>
           <p><textarea name="description" placeholder="Schedule Description"></textarea></p>
+          <p>나라이름</p>
+          <p><input type="text" name="country" placeholder="Schedule Country"></p>
           <p><input type="submit" value="저장"></p>
         </form>
         `
@@ -116,10 +121,11 @@ var app = http.createServer(function(request,response) {
         var post = qs.parse(body);
         var name = post.name;
         var description  = post.description;
+        var country = post.country
         if (name != undefined && description != undefined &&
             name.length <= 45 && description.length <= 90) {
-          db.query(`INSERT INTO schedule (SCHEDULE_NAME, SCHEDULE_DESCRIPTION)
-                    VALUES(?,?)`, [name, description], function(err, result) {
+          db.query(`INSERT INTO schedule (SCHEDULE_NAME, SCHEDULE_DESCRIPTION, SCHEDULE_COUNTRY)
+                    VALUES(?,?,?)`, [name, description,country], function(err, result) {
             if (err) {
               throw err;
             }
@@ -137,6 +143,7 @@ var app = http.createServer(function(request,response) {
       db.query(`SELECT * FROM schedule WHERE SCHEDULE_ID = ${queryData.id}`, function(err2,schedule) {
         var schedule_name = schedule[0].SCHEDULE_NAME
         var schedule_description = schedule[0].SCHEDULE_DESCRIPTION
+        var schedule_country = schedule[0].SCHEDULE_COUNTRY
         db.query(`SELECT * FROM consists JOIN activity USING (ACTIVITY_ID) JOIN place USING (PLACE_ID) WHERE SCHEDULE_ID = ${queryData.id}
                       ORDER BY CONSISTS_DAY, CONSISTS_TIME`, function(err,consists) {
           let promise = new Promise(function(resolve, reject) {
@@ -145,7 +152,7 @@ var app = http.createServer(function(request,response) {
           })
 
           function addBody(body, consists, schedule_name, schedule_description, id) {
-            body += `<div class='schedule_name'>${schedule_name}</div>
+            body += `<div class='schedule_name'>[${schedule_country}]${schedule_name}</div>
                       <div class='schedule_description'>✈️${schedule_description}</div>
                       <hr>
                       `;
@@ -174,7 +181,7 @@ var app = http.createServer(function(request,response) {
 
               body += `
                 <div class='controls'>
-                  <a href='/update_consist?schedule_id=${queryData.id}&activity_id=${activity_id}&day=${day}&time=${time}'>수정하기</a><br>
+                  <a href='/update_consist?schedule_id=${queryData.id}&activity_id=${activity_id}&day=${day}&time=${time}'>수정하기</a> |
                   <a href='/delete_consist?schedule_id=${queryData.id}&activity_id=${activity_id}&day=${day}&time=${time}'>삭제하기</a>
                 </div>
               </div>
@@ -198,54 +205,74 @@ var app = http.createServer(function(request,response) {
   } else if (pathname == '/add_consist') {
       var sel_place_id = queryData.sel_place_id;
       db.query(`SELECT * FROM schedule WHERE SCHEDULE_ID = ${queryData.id}`, function(err, schedules) {
-        var body = `<div class='schedule_name'>${schedules[0].SCHEDULE_NAME}</div>
+        if (err) {
+          throw err;
+        }
+        var body = `<div class='schedule_name'>[${schedules[0].SCHEDULE_COUNTRY}]${schedules[0].SCHEDULE_NAME}</div>
                   <div class='schedule_description'>✈️${schedules[0].SCHEDULE_DESCRIPTION}</div>
                   <hr>`
 
-        db.query('SELECT * FROM place', function(error, places) {
-          if (sel_place_id === undefined) {
-            sel_place_id = places[0].PLACE_ID
-          }
-          db.query(`SELECT * FROM activity WHERE PLACE_ID=${sel_place_id}`, function(err_act, activities) {
-            body += `
-                <script>
-                  window.onload = function() {
-                    document.getElementById('place_select').value = ${sel_place_id}
-                  }
-                </script>
-                <div class="activity">
-                <div class="text_section">
-                  <form action="/get_activities" method="post">
-                    장소
-                    <select id='place_select' name='place_id' onchange="this.form.submit()">
-                      ${template.placeCombobox(places)}
-                    </select>
-                    <input type="hidden" name="schedule_id" value=${queryData.id}>
-                  </form>
+        var schedule_country = schedules[0].SCHEDULE_COUNTRY;
 
-                  <form action="/add_consist_process" method="post">
-                    <div class="activity_name">
-                      할일
-                      <input type="hidden" name="???" value="???">
-                      <select name='activity_id'>
-                        ${template.activityCombobox(activities)}
+        db.query(`SELECT * FROM place WHERE PLACE_COUNTRY LIKE ?`, [schedule_country], function(error, places) {
+          if (error) {
+            throw error;
+          }
+
+
+          if (places[0] == undefined) {
+            response.writeHead(302, {'Location': `/schedule?id=${queryData.id}`});
+            response.end();
+          } else {
+            if (sel_place_id === undefined) {
+              sel_place_id = places[0].PLACE_ID
+            }
+
+            db.query(`SELECT * FROM activity WHERE PLACE_ID=${sel_place_id}`, function(err_act, activities) {
+              if (err_act) {
+                throw err_act;
+              }
+              body += `
+                  <script>
+                    window.onload = function() {
+                      document.getElementById('place_select').value = ${sel_place_id}
+                    }
+                  </script>
+                  <div class="activity">
+                  <div class="text_section">
+                    <form action="/get_activities" method="post">
+                      장소
+                      <select id='place_select' name='place_id' onchange="this.form.submit()">
+                        ${template.placeCombobox(places)}
                       </select>
                       <input type="hidden" name="schedule_id" value=${queryData.id}>
-                      </div>
-                    <div class="activity_time">시간 <input type="number" name="day">일차 🕒
-                          <select name="time">${template.timebox("00:00:00")}</select></div>
-                </div>
-                <div class="submit_button"><input type ="submit" value="추가"></div>
-              </form>`
+                    </form>
 
-            db.query('SELECT * FROM schedule', function(error, schedules) {
-              var schedule_list = template.schedule_list(schedules);
-              var review_list = template.review_list(schedules);
-              var html = template.HTML(schedule_list, review_list, '', body);
-              response.writeHead(200, {'Content-Type': 'text/html'});
-              response.end(html);
+                    <form action="/add_consist_process" method="post">
+                      <div class="activity_name">
+                        할일
+                        <input type="hidden" name="???" value="???">
+                        <select name='activity_id'>
+                          ${template.activityCombobox(activities)}
+                        </select>
+                        <input type="hidden" name="schedule_id" value=${queryData.id}>
+                        </div>
+                        <div class="activity_time">시간 <input type="number" name="day">일차
+                        <select name="time">${template.timebox("00:00:00")}</select></div>
+                  </div>
+                  <div class="submit_button"><input type ="submit" value="추가"></div>
+                </form>`
+
+              db.query('SELECT * FROM schedule', function(error, schedules) {
+                var schedule_list = template.schedule_list(schedules);
+                var review_list = template.review_list(schedules);
+                var html = template.HTML(schedule_list, review_list, '', body);
+                response.writeHead(200, {'Content-Type': 'text/html'});
+                response.end(html);
+              })
             })
-          })
+          }
+
         })
       })
   } else if (pathname == '/add_consist_process') {
@@ -277,14 +304,15 @@ var app = http.createServer(function(request,response) {
       db.query(`SELECT * FROM schedule WHERE SCHEDULE_ID = ${schedule_id}`, function(err2,schedule) {
         var schedule_name = schedule[0].SCHEDULE_NAME
         var schedule_description = schedule[0].SCHEDULE_DESCRIPTION
+        var schedule_country = schedule[0].SCHEDULE_COUNTRY
         db.query(`SELECT * FROM consists JOIN activity USING (ACTIVITY_ID) JOIN place USING (PLACE_ID)
-                      WHERE SCHEDULE_ID = ${schedule_id} AND ACTIVITY_ID = ${activity_id} AND CONSISTS_DAY = ${day} AND CONSISTS_TIME = ?`,
+        WHERE SCHEDULE_ID = ${schedule_id} AND ACTIVITY_ID = ${activity_id} AND CONSISTS_DAY = ${day} AND CONSISTS_TIME = ?`,
                                   [time], function(err,consists) {
 
           if (err) {
             throw err;
           }
-          body += `<div class='schedule_name'>${schedule_name}</div>
+          body += `<div class='schedule_name'>[${schedule_country}]${schedule_name}</div>
                     <div class='schedule_description'>✈️${schedule_description}</div>
                     <hr>
                     `;
@@ -295,21 +323,26 @@ var app = http.createServer(function(request,response) {
 
           body += `
             <div class="activity">
-            <div class="text_section">
-            <form action="/update_consist_process">
-              <div class="activity_time">시간 <input type="number" name="day" placeholder=${day}>일차🕒
+            <form action="/update_consist_process" method="post" enctype="multipart/form-data">
+              <div class="text_section">
+              <div class="activity_time">시간 <input type="number" name="day" value=${day}>일차🕒
                     <select name="time">${template.timebox(time)}</select></div> <br>
               <div class="place_name">${place_name}</div><br>
-              <div class="activity_name">활동명<br><input type="text" name="activity_name" placeholder=${activity_name}></div> <br>
-              <div class="activity_description">활동내용<br><textarea cols="18" rows="5" placeholder=${activity_description}></textarea></div></div>`
+              <input type="hidden" name="day_before" value=${day}>
+              <input type="hidden" name="time_before" value=${time}>
+              <input type="hidden" name="activity_id" value=${activity_id}>
+              <input type="hidden" name="schedule_id" value=${schedule_id}>
+              <div class="activity_name">활동명<br><input type="text" name="activity_name" value=${activity_name}></div> <br>
+              <div class="activity_description">활동내용<br><textarea cols="18" rows="5" name="activity_description">${activity_description}</textarea></div></div>`
 
           if (activity_image != null) {
-            body += `<div class="activity_image"><img src=${activity_image}></div>`
+            body += `<div class="activity_image"><img src=${activity_image}>`
           } else {
-            body += `<div class="activity_image"></div>`
+            body += `<div class="activity_image">`
           }
 
-          body += '</form></div>'
+          body += `<input type="file" name="activity_image" accept=".png, .jpg, .jpeg"></div>
+          <div class="submit_button"><input type ="submit" value="저장"></div></form></div>`
 
         db.query('SELECT * FROM schedule', function(error, schedules) {
           var schedule_list = template.schedule_list(schedules);
@@ -320,6 +353,56 @@ var app = http.createServer(function(request,response) {
         })
       })
     })
+  } else if (pathname == '/update_consist_process') {
+      var body = '';
+      var form = new multiparty.Form();
+
+      form.parse(request, function(err, fields, files) {
+        if (err) {
+          throw err;
+        }
+
+        var activity_id = fields.activity_id[0];
+        var schedule_id = fields.schedule_id[0];
+        var activity_name = fields.activity_name[0];
+        var activity_description = fields.activity_description[0];
+        var day = fields.day[0];
+        var time = fields.time[0];
+        var day_before = fields.day_before[0];
+        var time_before = fields.time_before[0];
+
+        db.query(`UPDATE activity SET ACTIVITY_NAME=?, ACTIVITY_DESCRIPTION=? WHERE ACTIVITY_ID = ?`,
+                      [activity_name, activity_description, activity_id], function(err_act, result) {
+          if (err_act) {
+            throw err_act;
+          }
+
+          db.query(`UPDATE consists SET CONSISTS_DAY=?, CONSISTS_TIME=?
+                      WHERE ACTIVITY_ID=? AND SCHEDULE_ID=? AND CONSISTS_DAY=? AND CONSISTS_TIME=?`,
+                      [day, time, activity_id, schedule_id, day_before, time_before], function(err_con, result_con) {
+            if (err_con) {
+              throw err_con;
+            }
+
+            if (files.activity_image[0].size == 0) {
+              // 사진이 수정되지 않은 경우
+              response.writeHead(302, {Location: `/schedule?id=${fields.schedule_id[0]}`});
+              response.end();
+            } else {
+              // 사진이 수정된 경우
+              fs.readFile(`${files.activity_image[0].path}`, function (err, data) {
+                fs.writeFile(`./images/${activity_id}${files.activity_image[0].path.substring(files.activity_image[0].path.indexOf('.'))}`, data, function(err_write, data) {
+                  if (err_write) {
+                    throw err_write;
+                  }
+                  response.writeHead(302, {Location: `/schedule?id=${fields.schedule_id[0]}`});
+                  response.end();
+                })
+              })
+            }
+          })
+        })
+      })
   } else if (pathname == '/delete_consist') {
       var schedule_id = queryData.schedule_id;
       var activity_id = queryData.activity_id;
@@ -346,13 +429,16 @@ var app = http.createServer(function(request,response) {
         response.writeHead(302, {Location:`/add_consist?id=${post.schedule_id}&sel_place_id=${post.place_id}`})
         response.end()
       })
-  } else if (pathname == '/review') {
-    // TODO
+  } else if (pathname == '/add_place') {
+    // TODO 이름, 나라 입력
+  } else if (pathname == '/add_activity') {
+    // TODO 드롭박스에서 place 선택하는 방식(select -> optgroup 활용), name, description, image 입력
   } else if (pathname == '/images') {
       fs.readFile(`./images/${queryData.image}`, function(image_error, data){
-        if (image_error) {
-          throw image_error;
-        }
+        // TODO 이미지 없을때 예외처리
+        // if (image_error) {
+        //   throw image_error;
+        // }
         response.writeHead(200, {'Content-Type' : 'image/jpeg'});
         response.end(data);
       });
@@ -377,5 +463,7 @@ var app = http.createServer(function(request,response) {
       response.end('<h1>404 NOT FOUND</h1>')
   }
 })
+
+// TODO submenu로 place, activity 추가하는거 만들기
 
 app.listen(3000);

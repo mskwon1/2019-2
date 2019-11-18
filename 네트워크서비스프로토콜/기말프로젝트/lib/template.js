@@ -15,9 +15,9 @@ module.exports = {
           ${schedule_list}
           <a id='new_schedule' href="/create_schedule">새로만들기</a>
         </div>
-        <div class = "submenu">여행후기
-          ${review_list}
-          <a id='new_review' href="/create_review">새로쓰기</a>
+        <div class= "submenu">추가하기
+          <a href="/add_place">여행지 추가하기</a>
+          <a href="/add_activity">활동 추가하기</a>
         </div>
       </div>
       <div class = "main">
