@@ -1,8 +1,8 @@
 /* The sidebar menu */
 @font-face { font-family: 'NanumGothic';
-src: url('/fonts?font=NanumGothic.eot');
-src: url('/fonts?font=NanumGothic.eot') format('embedded-opentype'),
-url('/fonts?font=NanumGothic.woff') format('woff');}
+src: url('/fonts/NanumGothic.eot');
+src: url('/fonts/NanumGothic.eot') format('embedded-opentype'),
+url('/fonts/NanumGothic.woff') format('woff');}
 
 .controls {
   text-align: right;
@@ -117,6 +117,7 @@ url('/fonts?font=NanumGothic.woff') format('woff');}
 .main > .activity form > .text_section > .place_name {
   font-size: 20px;
   font-weight: bold;
+  margin-bottom:3px;
 }
 
 .main > .activity form > .activity_image {

@@ -1,11 +1,11 @@
 module.exports = {
   //<link rel='stylesheet' type='text/css' href='/css/style.css'>
-  HTML:function(schedule_list,review_list, body, control){
+  HTML:function(schedule_list, body){
     return `
     <!doctype html>
     <html>
     <head>
-      <link rel='stylesheet' href='/css?css=style.css'>
+      <link rel='stylesheet' href='/css/style.css'>
       <title>나의 여행 다이어리</title>
       <meta charset = "utf-8">
     </head>
@@ -18,11 +18,12 @@ module.exports = {
         <div class= "submenu">추가하기
           <a href="/add_place">여행지 추가하기</a>
           <a href="/add_activity">활동 추가하기</a>
+          <a href="/delete_place">여행지 삭제하기</a>
+          <a href="/delete_activity">활동 삭제하기</a>
         </div>
       </div>
       <div class = "main">
         <h1 align = 'center' id='main_title'><a href="/">나의 여행 다이어리</a></h1>
-        ${control}
         ${body}
       </div>
     </body>
@@ -33,17 +34,7 @@ module.exports = {
 
     var i = 0;
     while(i < schedules.length){
-      list = list + `<a href="/schedule?id=${schedules[i].SCHEDULE_ID}">${schedules[i].SCHEDULE_NAME}</a>`;
-      i = i + 1;
-    }
-
-    return list;
-  },review_list:function(schedules){
-    var list = '';
-
-    var i = 0;
-    while(i < schedules.length){
-      list = list + `<a href="/review?id=${schedules[i].SCHEDULE_ID}">${schedules[i].SCHEDULE_NAME}</a>`;
+      list = list + `<a href="/schedule/${schedules[i].SCHEDULE_ID}">${schedules[i].SCHEDULE_NAME}</a>`;
       i = i + 1;
     }
 
@@ -83,6 +74,24 @@ module.exports = {
     }
 
     return html;
+  },placeComboboxSub:function(values, default_val) {
+    var html = '';
+    var current_country = '';
+    for (var i=0;i<values.length;i++) {
+      if (current_country != values[i].PLACE_COUNTRY) {
+        html += `</optgroup>
+                  <optgroup label="${values[i].PLACE_COUNTRY}">`
+        current_country = values[i].PLACE_COUNTRY
+      }
+      if (default_val == values[i].PLACE_ID) {
+        html += `<option value=${values[i].PLACE_ID} selected="selected">${values[i].PLACE_NAME}</option>`
+      } else {
+        html += `<option value=${values[i].PLACE_ID}>${values[i].PLACE_NAME}</option>`
+      }
+
+    }
+
+    return html;
   },activityCombobox:function(values) {
     var html = ''
     for (var i=0;i<values.length;i++) {
@@ -90,5 +99,11 @@ module.exports = {
     }
 
     return html;
+  },scheduleInfo:function(schedule) {
+    return `
+      <div class='schedule_name'>[${schedule.SCHEDULE_COUNTRY}] ${schedule.SCHEDULE_NAME}</div>
+      <div class='schedule_description'>✈️${schedule.SCHEDULE_DESCRIPTION}</div>
+      <hr>
+    `
   }
 }
