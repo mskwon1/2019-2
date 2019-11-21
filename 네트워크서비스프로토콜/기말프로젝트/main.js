@@ -18,11 +18,24 @@ var db = mysql.createConnection({
 });
 db.connect();
 
-// TODO 각종 form input 제약설정(사전, 사후) + mysql 오류핸들링?
-// TODO mysql INSERT 성공메시지
-// TODO 삭제할때 확인 메세지
+/* TODO
+  form 꾸미기
+  각종 form input 제약설정(사전, 사후) + mysql 오류핸들링?
+  해당 schedule의 나라에 place/activity 하나도 없을 경우 오류메시지
+  mysql INSERT 성공메시지
+  삭제할때 확인 메세지
+*/
 
 const app  = express()
+
+// express.static
+app.use(express.static('public'))
+
+// 404 ERROR
+app.use(function(req, res, next) {
+  // TODO 404 처리
+  res.status(404).send('<h1> 404 ERROR : PAGE NOT FOUND </h1>');
+});
 
 // 첫 페이지
 app.get('/', function(request, response) {
@@ -700,58 +713,6 @@ app.post('/delete_activity_process', function(request, response) {
     })
   })
 })
-
-// image 요청에 대한 응답
-app.get('/images/:image_num', function(request, response) {
-  var image_num = path.parse(request.params.image_num).base;
-  fs.readFile(`./images/${image_num}`, function(image_error, data){
-    // TODO 이미지 없을때 예외처리
-    // if (image_error) {
-    //   throw image_error;
-    // }
-    response.format({
-      'image/jpeg': function () {
-        response.send(data);
-      }
-    })
-  });
-})
-
-// css 요청에 대한 응답
-app.get('/css/:css_name', function(request, response) {
-  var css_name = path.parse(request.params.css_name).base;
-  fs.readFile(`./css/${css_name}`, function(css_error, data){
-    if (css_error) {
-      throw css_error;
-    }
-    response.format({
-      'text/css': function () {
-        response.send(data);
-      }
-    })
-  });
-})
-
-// font 요청에 대한 응답
-app.get('/fonts/:font_name', function(request, response) {
-  var font_name = path.parse(request.params.font_name).base;
-  fs.readFile(`./fonts/${font_name}`, function(font_error, data) {
-    if (font_error) {
-      throw font_error;
-    }
-    response.format({
-      'application/font-sfnt': function () {
-        response.send(data);
-      }
-    })
-  })
-})
-
-// 404 ERROR
-app.use(function(req, res, next) {
-  // TODO 404 처리
-  res.status(404).send('<h1> 404 ERROR : PAGE NOT FOUND </h1>');
-});
 
 // 서버 실행
 app.listen(3000, () => console.log('Server Running on port number 3000'))
