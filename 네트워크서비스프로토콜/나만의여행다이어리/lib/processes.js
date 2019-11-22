@@ -9,7 +9,7 @@ var app = express()
 var router = express.Router()
 
 var db = mysql.createConnection({
-  host : 'localhost',ㄱ
+  host : 'localhost',
   user : 'root',
   password : pw.pw,
   database : 'travel_schedule'
