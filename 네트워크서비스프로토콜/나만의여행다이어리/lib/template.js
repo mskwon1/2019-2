@@ -28,7 +28,8 @@ module.exports = {
       </div>
     </body>
     </html>
-    `;},
+    `;
+  },
   // schedule list를 받아와 html list 형식에 맞게 return
   schedule_list:function(schedules){
     var list = '';
@@ -67,7 +68,8 @@ module.exports = {
       }
     }
 
-    return html},
+    return html
+  },
   // 전달받은 place들을 option으로 포함하는 html select box return
   placeCombobox:function(values) {
     var html = ''
@@ -107,7 +109,8 @@ module.exports = {
       html += `<option value=${values[i].ACTIVITY_ID}>${values[i].ACTIVITY_NAME}</option>`
     }
 
-    return html;},
+    return html;
+  },
   // 전달받은 schedule을 html 형식으로 return
   scheduleInfo:function(schedule) {
     return `

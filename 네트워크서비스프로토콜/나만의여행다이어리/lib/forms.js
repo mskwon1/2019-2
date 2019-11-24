@@ -81,7 +81,7 @@ router.get('/add_activity', function(request, response) {
 
 // place 삭제 폼
 router.get('/delete_place', function(request, response) {
-  db.query('SELECT * FROM place', function(err_plc, places) {
+  db.query('SELECT * FROM place ORDER BY PLACE_COUNTRY', function(err_plc, places) {
     if (err_plc) {
       throw err_plc;
     }
