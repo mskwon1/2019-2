@@ -184,14 +184,194 @@
 ##### Jean Baptiste Joseph Fourier (1768 - 1830)
 
 - Had Crazy Idea(1807)
-  - Any periodic function can be rewritten as a weighted sum of Sines and Cosines of different frequencies
+  
+  - Any periodic function can be rewritten as a **weighted sum of Sines and Cosines of different frequencies**
+  
 - Fourier Series
+  
   - Possibly the greatest tool used in Engineering
+  
+- A sum of sinusoids
 
+  - Our building block
 
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125134710417.png" alt="image-20191125134710417" style="zoom:50%;" />
+
+    - Add enough of them to get any signal $f(x)$ you want
+    
+    - How many degrees of freedom?
+    
+    - What does each control?
+    
+    - Which one encodes the coarse vs fine sturcture of the signal
+    
+      <img src="../../typora_images/12FrequencyDescriptor/image-20191125134815624.png" alt="image-20191125134815624" style="zoom:67%;" />
+
+- Fourier Transform
+
+  - we want to understand the frequency $\omega$ of our signal. So let's reaprametrize the signal by $\omega$ instead of $x$
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125135522457.png" alt="image-20191125135522457" style="zoom:67%;" />
+  
+    
+    
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125134518703.png" alt="image-20191125134518703" style="zoom: 50%;" />
+    
+    - 손실이 없는 압축이다
+  
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191125135619920.png" alt="image-20191125135619920" style="zoom:67%;" />
+  
+  
+  
+  - Example
+  
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125140529831.png" alt="image-20191125140529831" style="zoom:67%;" />
+  
+   - Frequency Spectra
+  
+     <img src="../../typora_images/12FrequencyDescriptor/image-20191125140606922.png" alt="image-20191125140606922" style="zoom:67%;" />
+  
+     <img src="../../typora_images/12FrequencyDescriptor/image-20191125140617243.png" alt="image-20191125140617243" style="zoom:67%;" />
+  
+  - Fourier Transform Pairs
+  
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125140742633.png" alt="image-20191125140742633" style="zoom:67%;" />
+  
+  - Fourier Transform and Convolution
+  
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125140805359.png" alt="image-20191125140805359" style="zoom:50%;" />
+  
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125140828737.png" alt="image-20191125140828737" style="zoom: 50%;" />
+  
+    - 공간도메인에서의 컨볼루션 = 주파수도메인에서의 곱셈
+  
+  - Properties of Fourier Transform
+  
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125141336908.png" alt="image-20191125141336908" style="zoom:50%;" />
+  
+  - Example use : smoothing / blurring
+  
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125141420402.png" alt="image-20191125141420402" style="zoom:50%;" />
+  
+  - Low-pass filtering(Edge에 해당되는 부분이 날라가고 flat한 부분만 남아있음)
+  
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125141503816.png" alt="image-20191125141503816" style="zoom:50%;" />
+  
+    - 명암차이가 많으면 High frequency, 적으면 Low frequency
+    - **오히려 얼굴인식이 잘됨**
+  
+  - High-pass filtering(Edge, Corner만 남음 - 명암차이가 큰 부분) 
+  
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125141639981.png" alt="image-20191125141639981" style="zoom:50%;" />
 
 ### 텍스쳐
 
+- 텍스쳐
+
+  - 일정한 패턴의 반복
+  - 구조적 방법과 **통계적** 방법
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191125141924306.png" alt="image-20191125141924306" style="zoom: 67%;" />
+
+#### 전역 기술자
+
+- 에지 기반
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191125142000974.png" alt="image-20191125142000974" style="zoom:67%;" />
+
+- 명암 히스토그램 기반
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191125142013923.png" alt="image-20191125142013923" style="zoom:67%;" />
+
+  - uniform : 명암차이 변화가 가장 적을 때
+  - entropy : 명암차이 변화가 가장 클 때(uniform과 상반되는 개념)
+
+- 한계
+
+  - 지역적인 정보 반영하지 못함
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125142036922.png" alt="image-20191125142036922" style="zoom:67%;" />
+
+#### 지역 관계 기술자
+
+- 원리
+
+  - 화소 사이의 이웃 관계를 규정하고, 그들이 형성하는 패턴을 표현
+
+- 동시 발생 행렬
+
+  - 이웃 관계를 이루는 화소 쌍의 명암이 $(j,i)$인 빈도수 세어, 행렬 $O$의 요소 $o_{ji}$에 기록
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125142837919.png" alt="image-20191125142837919" style="zoom:67%;" />
+
+  - 특징추출
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125142946539.png" alt="image-20191125142946539" style="zoom: 80%;" />
+
+- 지역 이진 패턴 (LBP) [Ojala96]
+
+  - 8개 이웃과 대소관계에 따라 이진열을 만든 후 [0,255] 사이의 십진수로 변환
+
+  - 모든 화소를 가지고 히스토그램 구성
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125143031440.png" alt="image-20191125143031440" style="zoom:67%;" />
+
+    - 기준값을 기준으로 0/1로 표현, 2진수로 바꾸고 10진수로 변환
+    - 차원을 줄이는 효과
+
+- 지역 삼진 패턴 (LTP)
+
+  - 화소 값이 $p$라면, $p-t$보다 작으면 -1, $p+t$보다 크면 1, $[p-t, p+t]$ 사이면 0을 부여
+
+  - 두 개의 LBP로 분리
+
+  - 모든 화소를 가지고 히스토그램 구성
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125143546881.png" alt="image-20191125143546881" style="zoom:67%;" />
+
+- LBP와 LTP의 확장
+
+  - 조명 변환에 불변이나, 8이웃만 보면 스케일 변화에 대처 하지 못함
+
+  - 다양한 이웃을 이용한 스케일 불변 달성
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125143837564.png" alt="image-20191125143837564" style="zoom:67%;" />
+
+- LBP와 LTP의 응용
+
+  - 얼굴 검출, 사람 검출, 자연 영상에서 글자 추출 등
+
 ### 주성분 분석
+
+- 고차원 벡터를 저차원으로 축소
+
+  - 정보 손실을 최소화하는 조건
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125144203446.png" alt="image-20191125144203446" style="zoom:67%;" />
+
+#### 원리
+
+- 학습 집합 $X = \{x_1, x_2, x_3, ..., x_n\}$로 변환 행렬 $\bold{U}$를 추정
+
+- $\bold{U}$는 $d * D$로서 $D$차원의 $x$를 $d$차원의 $y$로 변환
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191125144355397.png" alt="image-20191125144355397" style="zoom:67%;" />
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191125144347105.png" alt="image-20191125144347105" style="zoom:67%;" />
+
+- 차원 축소를 어떻게 표현하나?
+
+  - 축 $u$상으로 투영으로 표현 $\hat{x} = ux^T$
+  - 그림 6-22는 2차원을 1차원으로 축소하는 상황
+
+- 정보 손실을 어떻게 표현하나?
+
+  - 정보란? 점들 사이의 거리나 상대적인 위치 등
+
+  - 어느 것의 정보 손실이 최소인가? :arrow_forward: 직관적으로 판단하여 맨 오른쪽
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191125144515971.png" alt="image-20191125144515971" style="zoom:67%;" />
+
+#### 알고리즘
 
 ### 얼굴 인식 : 고유 얼굴
