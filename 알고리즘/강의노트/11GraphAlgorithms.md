@@ -33,10 +33,10 @@
 - A vertex $u'$ is **reachable**  from vertex $u$ if there is a path $p$ from $u$ to $u'$ in $G$
 - The **length of path** is defined as the number of edges in the path
 - A **cycle** is a path where $v_0 = v_k$
-- An undriected graph is **connected** if every pair of vertices is connected by a path
+- An undirected graph is **connected** if every pair of vertices is connected by a path
 - A **forest** is an acyclic(cycle이 없는) graph(tree가 여러개)
   , and a **tree** is a connected acyclic graph
-- A graph taht has weights associated with each edge is called a **weighted graph**
+- A graph that has weights associated with each edge is called a **weighted graph**
 
 ### Tree
 
@@ -148,7 +148,7 @@
 
 #### Compute $G^T$
 
-- All directions are reveresd
+- All directions are reveresed
 
   ![image-20191107125540937](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191107125540937.png)
 
@@ -157,6 +157,8 @@
 - Vertices are selected in order of decreasing u.f
 
   ![image-20191107125609571](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191107125609571.png)
+  
+  ![image-20191126144319658](../../typora_images/11GraphAlgorithms/image-20191126144319658.png)
 
 #### SCC
 
@@ -165,5 +167,5 @@
 ### Euler Tour
 
 - An Euler tour of a strongly connected, directed graph $G = (V,E)$ is a cycle that traverses each edge of $G$ exactly once, although it may visit a vertex more than once
-  - $G$ has an Euler tour iff in-dgree(v) = out-degree(v) for all $v \in V$
+  - $G$ has an Euler tour iff in-degree(v) = out-degree(v) for all $v \in V$
   - The Euler tour algorithm runs in $O(E)$

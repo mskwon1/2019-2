@@ -12,8 +12,8 @@
 
 - Solutions represented with
 
-  - distance matrix $D$ where $d_y = \delta(i,j)$
-  - predecessor matrix $\Pi$ where $pi_{ij}$ : predecessor of $j$ on some shortest path $i$
+  - distance matrix **$D$ where $d_y = \delta(i,j)$**
+  - predecessor matrix **$\Pi$ where $pi_{ij}$ : predecessor of $j$ on some shortest path $i$**
 
   ![image-20191119121005961](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191119121005961.png)
 

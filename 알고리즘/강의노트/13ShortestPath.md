@@ -26,7 +26,7 @@ The problem of finding shortest paths from a source vertex $s$ to other vertices
 
 Thus, Dijkstra's algorithm : greedy algorithm, Floyd-Warshall algorithm : dynamic programming
 
-#### Negative-weight dges
+#### Negative-weight edges
 
 ![image-20191114122722278](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191114122722278.png)
 
@@ -41,7 +41,7 @@ Thus, Dijkstra's algorithm : greedy algorithm, Floyd-Warshall algorithm : dynami
 
 ![image-20191114123234787](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191114123234787.png)
 
-- predecessor subgraph defined by "$v.\pi$ : v의 predecessor in shortest-paths tree"와 같다
+- **predecessor subgraph** defined by "$v.\pi$ : v의 predecessor in shortest-paths tree"와 같다
 
 #### Relaxation
 
