@@ -79,11 +79,19 @@
 
     ![1572844015565](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1572844015565.png)
 
-    - a : 코너, b : 에지, c : 플랫
+    - a : 코너, 모든 방향으로 변화가 심함
+      높은 값 부여
+    
+    - b : 에지, 에지 방향으로는 변화가 적지만, 에지 수직 방향으로 변화가 심함
+    
+      중간 값 부여
+    
+    - c : 플랫, 모든 방향으로 변화 적음
+      낮은 값 부여
 
-- 모라벡이ㅡ 함수
+- 모라벡의 함수
 
-  - 특징 가능성 값 $C$
+  - **특징 가능성** 값 $C$
 
     ![1572845014394](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1572845014394.png)
 
@@ -156,11 +164,22 @@
 
 ![1572845975335](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1572845975335.png)
 
-![1572846025508](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1572846025508.png)
+- The surface $E(u,v)$ is locally approximated by a quadratic form
+
+  - Specifically, in which directions does it have the smallest/greatest change?
+
+- First, consider the axis-aligned case(gradients are either horizontal or vertical)
+
+  <img src="../../typora_images/09Local_Feature/image-20191129164652578.png" alt="image-20191129164652578" style="zoom:50%;" />
+
+  - If either $a$ or $b$ is close to 0, then this is **not** a corner, 
+    so look for locations where both are large![1572846025508](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1572846025508.png)
 
 ##### Interpreting the eigen values
 
 ![1572846089696](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1572846089696.png)
+
+- Corner response function
 
 ![1572846105060](C:\Users\user\AppData\Roaming\Typora\typora-user-images\1572846105060.png)
 
@@ -194,7 +213,6 @@
   - **Invariance** : Image is transformed and corner locations do not change
     - 카메라가 회전을 하더라도 코너의 특성은 유지
   - **Covariance** : If we have two transformed versions of the same image, features should be detected in corresponding locations
-    - 
 - 해리스 단점 : 조명환경에 따라서 코너가 생길수도, 없어질수도 있다
 
 ### 2차 미분을 사용한 방법
@@ -208,6 +226,10 @@
     ![image-20191111140513169](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20191111140513169.png)
 
     - 해리스 코너에 가우시안 씌운거
+  
+- 2차 미분에서 특징 가능성 값 측정
+
+  <img src="../../typora_images/09Local_Feature/image-20191129164930038.png" alt="image-20191129164930038" style="zoom:80%;" />
 
 ### 슈산
 

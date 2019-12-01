@@ -361,7 +361,7 @@
 
 - 차원 축소를 어떻게 표현하나?
 
-  - 축 $u$상으로 투영으로 표현 $\hat{x} = ux^T$
+  - 축 $\bold{u}$상으로 투영으로 표현 $\hat{x} = \bold{ux}^T$
   - 그림 6-22는 2차원을 1차원으로 축소하는 상황
 
 - 정보 손실을 어떻게 표현하나?
@@ -371,8 +371,103 @@
   - 어느 것의 정보 손실이 최소인가? :arrow_forward: 직관적으로 판단하여 맨 오른쪽
 
     <img src="../../typora_images/12FrequencyDescriptor/image-20191125144515971.png" alt="image-20191125144515971" style="zoom:67%;" />
+  
+- PCA의 정보 손실 표현
+
+  - 원래 공간에 퍼져 있는 정도를 변환된 공간이 얼마나 잘 유지하는지 측정
+  - 이 수치를 변환된 공간에서 **분산**으로 측정
+
+- 최적화 문제
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129171933598.png" alt="image-20191129171933598" style="zoom:67%;" />
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129171946781.png" alt="image-20191129171946781" style="zoom:67%;" />
 
 #### 알고리즘
 
+- 최대화 문제
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129172006284.png" alt="image-20191129172006284" style="zoom:67%;" />
+
+- u가 단위 벡터라는 조건을 포함시키면,
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129172017557.png" alt="image-20191129172017557" style="zoom:67%;" />
+
+- 도함수를 구하고, 도함수를 0으로 두고 정리하면,
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129172038417.png" alt="image-20191129172038417" style="zoom:80%;" />
+
+- 식 (6.39)의 의미
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129172049915.png" alt="image-20191129172049915" style="zoom:67%;" />
+
+<img src="../../typora_images/12FrequencyDescriptor/image-20191129172104029.png" alt="image-20191129172104029" style="zoom:80%;" />
+
+- $D$차원을 $d$차원으로 축소
+
+  - 지금까지는 $D$차원을 1차원으로 축소함
+
+  - 공분산 행렬 $\sum$은 $D*D$이므로, $D$개의 고유 벡터가 있음
+
+    - 이들은 서로 수직인 단위 벡터, 즉 $\bold{u}_j\bold{u}_i = 1$이고 $\bold{u}_j\bold{u}_i = 0, i\ne j$
+
+  - 고유값이 큰 순서대로 상위 $d$개의 고유 벡터 $\bold{u}_1, \bold{u}_2, ..., \bold{u}_d$를 선택하고 식 (6.40)에 배치
+    ($\bold{U}는 d*D$)
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191129172335637.png" alt="image-20191129172335637" style="zoom:67%;" />
+
+- U를 이용한 차원 축소
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129172347619.png" alt="image-20191129172347619" style="zoom:67%;" />
+
+<img src="../../typora_images/12FrequencyDescriptor/image-20191129172355024.png" alt="image-20191129172355024" style="zoom:67%;" />
+
+<img src="../../typora_images/12FrequencyDescriptor/image-20191129172401115.png" alt="image-20191129172401115" style="zoom:67%;" />
+
 ### 얼굴 인식 : 고유 얼굴
+
+- 컴퓨터 비전에서 PCA의 응용 사례
+
+  - 기술자 추출 : PCA-SIFT, GLOH 등
+  - 가장 혁신적인 응용 :arrow_forward: 얼굴 인식
+
+- 평균 얼굴
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129172442760.png" alt="image-20191129172442760" style="zoom:67%;" />
+
+- 얼굴 영상에 PCA 적용
+
+  - 영상 $f_i$를 벡터 형태로 변환(벡터의 차원 $D=MN$) : 행 우선으로 재배치
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191129172538925.png" alt="image-20191129172538925" style="zoom:67%;" />
+
+  - $n$개의 얼굴 영상으로 구성된 학습 집합 $X=\{x_1, x_2,..., x_n\}$을 입력으로 5절의 PCA를 적용
+
+  - 이렇게 얻은 고유 벡터 $\bold{u_1}, \bold{u_2}, ..., \bold{u_d}$를 고유 얼굴이라 부름
+
+  - 이들에 (6.43)을 역으로 적용하여 영상 형태로 바꾸면, 그림 6.25
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191129172702905.png" alt="image-20191129172702905" style="zoom:67%;" />
+
+- 고유 얼굴의 활용 : 얼굴 영상 압축
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129172729612.png" alt="image-20191129172729612" style="zoom:67%;" />
+
+  - 역 변환으로 복원 가능
+
+    <img src="../../typora_images/12FrequencyDescriptor/image-20191129172739173.png" alt="image-20191129172739173" style="zoom:67%;" />
+
+- 고유 얼굴의 활용 : 얼굴 인식
+
+  - PCA로 변환한 벡터 $\bold{y_i}$를 모델로 사용 : $Y = \{\bold{y_1},\bold{y_2},...,\bold{y_n}\}$
+  - 테스트 영상 $f$가 입력되면 PCA로 $\bold{y}$를 구한 후, $Y$에서 가장 가까운 벡터를 찾아 그 부류로 분류
+
+- 고유 얼굴 활용 시 주의점
+
+  - 얼굴을 찍은 각도와 얼굴 크기, 영상 안에서의 얼굴 위치, 조명이 어느 정도 일정해야 함
+  - 영상마다 다르고 그 변화가 클수록 성능이 떨어짐
+  - Turk와 Pentrland의 연구 결과
+    - 조명에 변화를 준 경우 96%, 각도에 변화를 준 경우 85%, 크기에 변화를 준 경우 64%의 정인식률을 얻음
+
+  <img src="../../typora_images/12FrequencyDescriptor/image-20191129173014036.png" alt="image-20191129173014036" style="zoom:67%;" />
 
