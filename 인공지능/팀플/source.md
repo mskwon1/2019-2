@@ -1,45 +1,3 @@
-### Libraries
-
-~~~python
-import os, glob
-import random
-from sklearn.model_selection import train_test_split
-import cv2
-import numpy as np
-import pandas as pd
-import multiprocessing
-from copy import deepcopy
-from sklearn.metrics import precision_recall_curve, auc
-import keras
-import keras.backend as K
-from keras.optimizers import Adam
-from keras.callbacks import Callback
-from keras.applications.densenet import DenseNet201
-from keras.layers import Dense, Flatten
-from keras.models import Model, load_model
-from keras.utils import Sequence
-from albumentations import Compose, VerticalFlip, HorizontalFlip, Rotate, GridDistortion
-import matplotlib.pyplot as plt
-from IPython.display import Image
-from tqdm import tqdm_notebook as tqdm
-from numpy.random import seed
-seed(10)
-from tensorflow import set_random_seed
-set_random_seed(10)
-import tensorflow -as tf
-%matplotlib inline
-~~~
-
-- 사용할 모듈 import 
-
-~~~python
-test_imgs_folder = './drive/My Drive/Colab Notebooks/input/test_images/'
-train_imgs_folder = './drive/My Drive/Colab Notebooks/input/train_images/'
-num_cores = multiprocessing.cpu_count()
-~~~
-
-- test / train 이미지 폴더 지정
-
 ### Data Generators
 
 #### One-hot encoding classes
@@ -157,7 +115,8 @@ class DataGenenerator(Sequence):
         return np.array(labels)
 ~~~
 
-- 데이터 전처리를 위한 `DataGenerator` 클래스 정의
+- 이미지 데이터를 batch 단위로 가져오기 위해`DataGenerator` 클래스 정의
+  - resize, augmentation 등 처리 과정 포함
 
 ~~~python
 albumentations_train = Compose([
@@ -353,6 +312,9 @@ ________________________________________________________________________________
 ~~~
 
 - 모델의 summary
+  - EfficientNetB2를 Imagenet 데이터에 적용한 가중치 사용
+  - 마지막 층에 현재 task에 맞춰서 Dense Layer에 노드 수를 4개로 하고 
+    sigmoid를 통과시켜 결과값 출력
 
 ~~~python
 from keras_radam import RAdam
@@ -488,6 +450,12 @@ plt.savefig('pr_auc_hist.png')
 ### Selecting Postprocessing Thresholds
 
 ~~~python
+model = load_model('./drive/My Drive/4classifier_densenet169_epoch_21_val_pr_auc_0.8365921057512743.h5')
+~~~
+
+- submission에서는 pre-trained 모델을 사용
+
+~~~python
 class_names = ['Fish', 'Flower', 'Sugar', 'Gravel']
 def get_threshold_for_recall(y_true, y_pred, class_i, recall_threshold=0.94, precision_threshold=0.90, plot=False):
     precision, recall, thresholds = precision_recall_curve(y_true[:, class_i], y_pred[:, class_i])
@@ -542,12 +510,6 @@ for i, class_name in tqdm(enumerate(class_names)):
 ### Post-processing segmentation submisssion
 
 ~~~python
-model = load_model('./drive/My Drive/4classifier_densenet169_epoch_21_val_pr_auc_0.8365921057512743.h5')
-~~~
-
-- submission에서는 pre-trained 모델을 사용
-
-~~~python
 data_generator_test = DataGenenerator(folder_imgs=test_imgs_folder, shuffle=False)
 y_pred_test = model.predict_generator(data_generator_test, workers=num_cores)
 ~~~
@@ -594,4 +556,5 @@ submission.loc[submission['Image_Label'].isin(image_labels_empty), 'EncodedPixel
 submission.to_csv('new3.csv', index=None)
 ~~~
 
-- class 별 threshold값에 따라 해당하는 image_label의 세그멘테이션 데이터를 제거하고, csv 파일로 재생성
+- class 별 threshold값에 따라 해당하는 image_label의 세그멘테이션 데이터를 제거하고, 
+  csv 파일로 재생성
